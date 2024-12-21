@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regalo Interactivo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .gift-container {
+            text-align: center;
+            position: relative;
+        }
+
+        .gift {
+            font-size: 100px;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .gift.open {
+            transform: rotate(-15deg) translateY(-20px);
+        }
+
+        .message-box {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .message-box textarea {
+            width: 100%; 
+            max-width: 300px; 
+            height: 100px; 
+            padding: 10px; 
+            font-size: 16px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px;
+        }
+
+        /* Estilo de partículas */
+        .particle {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: scatter 1.5s ease-out forwards;
+        }
+
+        @keyframes scatter {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(var(--dx) * 100px), calc(var(--dy) * 100px)) scale(0.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gift-container">
+        <!-- Emoji del regalo -->
+        <div class="gift" id="gift">🎁</div>
+        
+        <!-- Caja para mensaje -->
+        <div class="message-box" id="messageBox">
+            <textarea placeholder="Escribe tu mensaje aquí..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        const gift = document.getElementById('gift');
+        const messageBox = document.getElementById('messageBox');
+        let clickCount = 0;
+        const requiredClicks = 5; // Número de clics necesarios para abrir el regalo
+
+        // Generar partículas
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.textContent = '⭐';
+
+            // Generar direcciones aleatorias para esparcir
+            const angle = Math.random() * 2 * Math.PI;
+            const distanceX = Math.cos(angle);
+            const distanceY = Math.sin(angle);
+
+            particle.style.setProperty('--dx', distanceX);
+            particle.style.setProperty('--dy', distanceY);
+
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.animationDuration = `${Math.random() * 1 + 1}s`;
+            document.body.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1500);
+        }
+
+        gift.addEventListener('click', (e) => {
+            clickCount++;
+            const rect = gift.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Crear partículas en la posición del clic
+            for (let i = 0; i < 10; i++) {
+                createParticle(e.clientX, e.clientY);
+            }
+
+            if (clickCount >= requiredClicks) {
+                gift.classList.add('open');
+                messageBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
